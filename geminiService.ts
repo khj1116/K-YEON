@@ -1,10 +1,17 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+// AI 인스턴스를 필요할 때 생성하는 헬퍼 함수
+const getAI = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey || apiKey === 'undefined') {
+    throw new Error("API_KEY가 설정되지 않았습니다. Cloudflare 환경 변수를 확인해주세요.");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 export const getLifeSimulation = async (location: string, budget: string, children: number) => {
-  // Explicitly ask for Japanese output as the primary language for the simulation result.
+  const ai = getAI();
   const prompt = `Based on a location in Korea (${location}), a monthly budget goal of ${budget} won, and ${children} children, simulate a realistic monthly budget for a Japanese housewife living in Korea. 
   1. Compare costs with typical Japanese prices (e.g., Tokyo vs Seoul).
   2. Explain education environments and language learning paths.
@@ -33,7 +40,7 @@ export const getLifeSimulation = async (location: string, budget: string, childr
 };
 
 export const getAptitudeReport = async (conversation: string) => {
-  // Analysis report should be in Japanese for the woman to understand her own profile.
+  const ai = getAI();
   const prompt = `Analyze this interview with a Japanese woman interested in marrying a Korean man: "${conversation}". 
   Calculate a "Home Stability Index" (0-100), identify 3 core traits.
   Provide the summary and traits in Japanese. 
@@ -61,6 +68,7 @@ export const getAptitudeReport = async (conversation: string) => {
 };
 
 export const translateCulturalNuance = async (message: string, targetRole: 'man' | 'woman') => {
+  const ai = getAI();
   const systemInstruction = targetRole === 'woman' 
     ? "You are a cultural translator. A Korean man sent a message. Translate it into extremely polite, soft Japanese (Keigo/Wago) that explains the cultural intent (e.g., 'Pali-pali' urgency vs affection) to help the Japanese woman not feel overwhelmed. Provide the translation and a brief 'Cultural Context' note in Japanese."
     : "You are a cultural translator. A Japanese woman sent a message. Explain the hidden nuance, the 'Meiwaku' (not wanting to trouble others) aspect, and her true feelings to the Korean man in direct, clear Korean.";
@@ -75,8 +83,9 @@ export const translateCulturalNuance = async (message: string, targetRole: 'man'
 };
 
 export const optimizeProfile = async (bioInfo: string) => {
+  const ai = getAI();
   const prompt = `Based on these details: ${bioInfo}, write a profile bio that appeals to family-oriented Japanese women. 
-  Focus on 'Gentleness (優しさ)', 'Financial Stability (経済的安定)', and 'Family-first (家族優先)'. 
+  Focus on 'Gentleness (優しさ)', 'Financial Stability (経済적 안정)', and 'Family-first (가족 우선)'. 
   Provide the result in both Korean (for the user to check) and Japanese (for the actual profile).`;
   
   const response = await ai.models.generateContent({
