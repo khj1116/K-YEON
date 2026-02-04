@@ -1,12 +1,15 @@
 
 import React, { useState } from 'react';
 import { optimizeProfile } from '../geminiService';
+import { UserType } from '../types';
 
 interface ProfileOptimizerProps {
   onBack: () => void;
+  userType: UserType;
 }
 
-const ProfileOptimizer: React.FC<ProfileOptimizerProps> = ({ onBack }) => {
+// @google/genai task type: Profile optimization is a text generation task suitable for gemini-3-flash-preview.
+const ProfileOptimizer: React.FC<ProfileOptimizerProps> = ({ onBack, userType }) => {
   const [info, setInfo] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
