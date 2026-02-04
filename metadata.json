@@ -1,0 +1,7 @@
+{
+  "name": "K-Kizuna: Korea-Japan Marriage Bridge",
+  "description": "A sophisticated AI-powered platform bridging Korean men and Japanese women for serious relationships and marriage, focusing on cultural understanding and life simulation.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
