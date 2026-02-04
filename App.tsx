@@ -29,13 +29,13 @@ const App: React.FC = () => {
 
     switch (currentView) {
       case 'simulator':
-        return <Simulator onBack={() => setCurrentView('home')} />;
+        return <Simulator onBack={() => setCurrentView('home')} userType={userType} />;
       case 'aptitude':
-        return <AptitudeTest onBack={() => setCurrentView('home')} />;
+        return <AptitudeTest onBack={() => setCurrentView('home')} userType={userType} />;
       case 'translator':
-        return <Translator onBack={() => setCurrentView('home')} />;
+        return <Translator onBack={() => setCurrentView('home')} userType={userType} />;
       case 'optimizer':
-        return <ProfileOptimizer onBack={() => setCurrentView('home')} />;
+        return <ProfileOptimizer onBack={() => setCurrentView('home')} userType={userType} />;
       default:
         return (
           <>
@@ -48,7 +48,7 @@ const App: React.FC = () => {
                 </div>
                 <div className="flex gap-4 items-start">
                   <span className="px-2 py-0.5 bg-indigo-50 text-indigo-500 rounded font-bold">案内</span>
-                  <p>本サービスは直接的なマッチングを提供するものではありません。交際前にお相手を深く理解したい方や、結婚相談所などのプラットフォームを利用する前の準備・サポート를 목적으로 합니다.</p>
+                  <p>本サービスは直接的なマッチングを提供するものではありません。交際前にお相手を深く理解したい方や、結婚相談所などのプラットフォームを利用する前の準備・サポートを目的としています。</p>
                 </div>
               </div>
               <AdBanner slot="home-dashboard-bottom" />
@@ -67,16 +67,17 @@ const App: React.FC = () => {
         >
           <span className="w-8 h-8 bg-rose-500 rounded-lg flex items-center justify-center text-white text-sm group-hover:bg-indigo-600 transition-colors">K</span>
           <span className="gradient-text">K-Kizuna</span>
-          <span className="text-neutral-300 font-light text-sm ml-1">絆</span>
+          <span className="text-neutral-300 font-light text-sm ml-1 select-none">絆</span>
         </div>
-        <div className="flex gap-8 items-center font-bold text-sm">
+        <div className="flex gap-6 items-center font-bold text-sm">
           <button onClick={() => setCurrentView('home')} className="text-neutral-900 hover:text-rose-500 transition-colors">Home</button>
           {userType && (
             <button 
               onClick={() => setUserType(null)}
-              className="px-4 py-2 bg-neutral-900 text-white rounded-xl text-xs hover:bg-neutral-800 transition-all"
+              className="px-5 py-2.5 bg-neutral-900 text-white rounded-2xl text-xs hover:bg-neutral-800 transition-all flex flex-col items-center"
             >
-              Role Switch
+              <span>역할 변경</span>
+              <span className="text-[9px] opacity-60">役割切替</span>
             </button>
           )}
         </div>
@@ -101,23 +102,19 @@ const App: React.FC = () => {
             </div>
             <div>
               <div className="font-bold text-neutral-900 mb-6 uppercase text-xs tracking-widest">Legal</div>
-              <ul className="text-sm text-neutral-400 space-y-4">
-                <li><button onClick={() => setCurrentView('privacy')} className="hover:text-rose-500 transition-colors">개인정보처리방침</button></li>
-                <li><button onClick={() => setCurrentView('terms')} className="hover:text-rose-500 transition-colors">이용약관</button></li>
+              <ul className="text-sm text-neutral-400 space-y-4 font-medium">
+                <li><button onClick={() => setCurrentView('privacy')} className="hover:text-rose-500 transition-colors">개인정보처리방침 (プライバシーポリシー)</button></li>
+                <li><button onClick={() => setCurrentView('terms')} className="hover:text-rose-500 transition-colors">이용약관 (利用規約)</button></li>
               </ul>
             </div>
             <div>
               <div className="font-bold text-neutral-900 mb-6 uppercase text-xs tracking-widest">Support</div>
-              <p className="text-sm text-neutral-400 mb-2">support@k-kizuna.com</p>
-              <p className="text-sm text-neutral-400">Seoul, South Korea</p>
+              <p className="text-sm text-neutral-400 mb-2 font-medium">support@k-kizuna.com</p>
+              <p className="text-sm text-neutral-400 font-medium">Seoul, South Korea</p>
             </div>
           </div>
           <div className="pt-8 border-t border-neutral-100 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs text-neutral-300 font-medium tracking-wide">© 2024 K-KIZUNA. ALL RIGHTS RESERVED.</p>
-            <div className="flex gap-6">
-              <span className="text-xs text-neutral-200">Instagram</span>
-              <span className="text-xs text-neutral-200">Twitter (X)</span>
-            </div>
           </div>
         </div>
       </footer>
