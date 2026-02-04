@@ -1,14 +1,17 @@
 
 import React, { useState } from 'react';
 import { translateCulturalNuance } from '../geminiService';
+import { UserType } from '../types';
 
 interface TranslatorProps {
   onBack: () => void;
+  userType: UserType;
 }
 
-const Translator: React.FC<TranslatorProps> = ({ onBack }) => {
+const Translator: React.FC<TranslatorProps> = ({ onBack, userType }) => {
+  const isWoman = userType === 'woman';
   const [text, setText] = useState('');
-  const [role, setRole] = useState<'man' | 'woman'>('woman');
+  const [role, setRole] = useState<'man' | 'woman'>(isWoman ? 'woman' : 'man');
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +33,7 @@ const Translator: React.FC<TranslatorProps> = ({ onBack }) => {
     setLoading(true);
     try {
       const res = await translateCulturalNuance(textToUse, role);
-      setResult(res || "翻訳に失敗しました。");
+      setResult(res || (isWoman ? "翻訳に失敗しました。" : "번역에 실패했습니다."));
     } catch (e) {
       alert("Error.");
     } finally {
@@ -39,38 +42,47 @@ const Translator: React.FC<TranslatorProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-12">
-      <button onClick={onBack} className="mb-6 text-neutral-400 hover:text-neutral-900 flex items-center gap-2">
-        &larr; 戻る (Back)
+    <div className="max-w-3xl mx-auto px-6 py-12 relative">
+       <div className="absolute top-10 right-0 text-5xl sticker-float opacity-10 select-none">💬</div>
+       <div className="absolute bottom-10 left-0 text-5xl sticker-float opacity-10 select-none" style={{animationDelay: '3s'}}>🇯🇵</div>
+
+      <button onClick={onBack} className="mb-8 text-neutral-400 hover:text-neutral-900 flex items-center gap-2 font-bold transition-colors">
+        &larr; {isWoman ? '戻る' : '뒤로가기'}
       </button>
 
-      <div className="bg-white rounded-3xl shadow-xl p-8 border border-neutral-100">
-        <h2 className="text-2xl font-bold mb-2">AI "Culture Bridge" 翻訳</h2>
-        <p className="text-neutral-500 mb-8 text-sm">言葉の裏にある「文化的なニュアンス」を読み解きます。</p>
+      <div className="bg-white rounded-[3rem] shadow-2xl p-10 border border-neutral-50 relative overflow-hidden">
+        <h2 className="text-3xl font-black mb-3">
+          {isWoman ? 'カルチャー・ブリッジ 翻訳' : '컬처 브릿지 번역'}
+        </h2>
+        <p className="text-neutral-500 mb-10 text-sm">
+          {isWoman ? '言葉の裏にある「文化的なニュ아ンス」をAIが解説します。' : '상대방의 말에 담긴 일본 특유의 뉘앙스를 해석합니다.'}
+        </p>
         
-        <div className="flex gap-4 mb-6">
+        <div className="flex gap-4 mb-8">
           <button 
             onClick={() => { setRole('woman'); setResult(null); setText(''); }}
-            className={`flex-grow py-3 rounded-xl font-bold transition-all ${role === 'woman' ? 'bg-rose-500 text-white shadow-lg shadow-rose-100' : 'bg-neutral-100 text-neutral-500'}`}
+            className={`flex-grow py-4 rounded-2xl font-black transition-all ${role === 'woman' ? 'bg-rose-500 text-white shadow-xl shadow-rose-100' : 'bg-neutral-100 text-neutral-500'}`}
           >
-            受け取る側 (日本人女性)
+            {isWoman ? '受け取り側 (日本人女性)' : '일본인 여성 (받는 쪽)'}
           </button>
           <button 
             onClick={() => { setRole('man'); setResult(null); setText(''); }}
-            className={`flex-grow py-3 rounded-xl font-bold transition-all ${role === 'man' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-neutral-100 text-neutral-500'}`}
+            className={`flex-grow py-4 rounded-2xl font-black transition-all ${role === 'man' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-100' : 'bg-neutral-100 text-neutral-500'}`}
           >
-            보내는 쪽 (한국인 남성)
+            {isWoman ? '送り側 (韓国人男性)' : '한국인 남성 (보내는 쪽)'}
           </button>
         </div>
 
-        <div className="mb-4">
-          <label className="text-[10px] text-neutral-400 block mb-2">よくある例文 (Click to try):</label>
+        <div className="mb-6">
+          <label className="text-[10px] text-neutral-400 block mb-3 font-bold uppercase tracking-widest">
+            {isWoman ? '例文を試す' : '주요 예문'}
+          </label>
           <div className="flex flex-wrap gap-2">
             {(role === 'woman' ? womanExamples : manExamples).map((ex, i) => (
               <button 
                 key={i} 
                 onClick={() => { setText(ex); handleTranslate(ex); }}
-                className="text-[10px] bg-neutral-50 hover:bg-blue-50 border rounded px-2 py-1 text-neutral-600 transition-colors"
+                className="text-[11px] bg-neutral-50 hover:bg-rose-50 hover:text-rose-600 border border-neutral-100 rounded-full px-4 py-2 text-neutral-600 transition-all font-medium"
               >
                 {ex}
               </button>
@@ -81,29 +93,31 @@ const Translator: React.FC<TranslatorProps> = ({ onBack }) => {
         <textarea 
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={role === 'woman' ? "受け取った韓国語を入力してください..." : "한국어로 보낼 메시지를 입력하세요..."}
-          className="w-full h-40 p-4 rounded-2xl border border-neutral-200 outline-none focus:ring-2 focus:ring-indigo-500 mb-4 resize-none text-lg"
+          placeholder={role === 'woman' ? "メッセージを入力してください..." : "메시지를 입력하세요..."}
+          className="w-full h-44 p-6 rounded-[2rem] border border-neutral-100 bg-neutral-50 outline-none focus:ring-4 focus:ring-rose-100 mb-6 resize-none text-lg font-medium transition-all"
         />
 
         <button 
           onClick={() => handleTranslate()}
           disabled={loading}
-          className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 disabled:opacity-50 transition-all mb-8 shadow-lg shadow-indigo-100"
+          className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black hover:bg-indigo-700 disabled:opacity-50 transition-all mb-10 shadow-xl shadow-indigo-100 text-lg flex items-center justify-center gap-3"
         >
-          {loading ? '文化のニュアンスを分析中...' : 'ニュアンスを翻訳する'}
+          {loading ? (
+            <><span className="animate-spin text-2xl">🪄</span> {isWoman ? '分析中...' : '분석 중...'}</>
+          ) : (isWoman ? 'ニュアンスを解析する' : '뉘앙스 해석하기')}
         </button>
 
         {result && (
-          <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100 animate-fade-in">
-            <h3 className="text-sm font-bold text-blue-800 mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
-              {role === 'woman' ? 'AI解説 & 翻訳' : 'AI 해석 및 번역'}
+          <div className="p-8 bg-indigo-50/50 rounded-[2.5rem] border border-indigo-100 animate-fade-in relative">
+            <h3 className="text-sm font-black text-indigo-700 mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
+              {isWoman ? 'AI解説 & 翻訳結果' : 'AI 해석 및 번역 결과'}
             </h3>
-            <div className="text-neutral-700 whitespace-pre-wrap text-lg leading-relaxed font-medium">
+            <div className="text-neutral-800 whitespace-pre-wrap text-lg leading-relaxed font-bold">
               {result}
             </div>
-            <div className="mt-4 p-4 bg-white rounded-xl text-[10px] text-neutral-400 italic">
-              AI Note: 日本の「遠慮/和」の文化と、韓国の「情/ストレートさ」のバランスを考慮しています。
+            <div className="mt-6 pt-6 border-t border-indigo-100 text-[11px] text-neutral-400 italic">
+              AI Note: {isWoman ? '日本の「遠慮」と韓国の「情」のバランスを考慮しています。' : '일본의 배려 문화와 한국의 직설적인 표현 방식을 중재합니다.'}
             </div>
           </div>
         )}
