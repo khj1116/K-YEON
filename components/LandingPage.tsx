@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { UserType } from '../types';
 
 interface LandingPageProps {
@@ -7,6 +7,14 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
+  // 'new URL' 생성자에서 발생하는 'Invalid URL' 오류를 방지하기 위해 
+  // 루트 경로를 직접 사용하거나 단순 문자열 경로를 사용합니다.
+  // index.html과 같은 위치에 있다면 'main_hero.png'만으로도 브라우저가 인식합니다.
+  const heroImageUrl = "main_hero.png";
+  
+  // 이미지 로드 실패 상태 관리
+  const [imgError, setImgError] = useState(false);
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 lg:py-20 relative">
       {/* Decorative Floating Elements */}
@@ -26,13 +34,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               Family in <span className="text-indigo-600">Korea</span>.
             </h1>
             <h2 className="text-2xl lg:text-3xl font-bold text-neutral-400">
-              韓国で、本当の家族を見つける。
+              韓国で、本当の家族を見つける.
             </h2>
           </div>
 
           <p className="text-lg text-neutral-500 leading-relaxed max-w-lg">
             한국 남성의 진정성과 일본 여성의 섬세함이 만나는 곳.<br/>
-            <span className="text-neutral-400 text-sm italic">韓国人男性の誠実さと日本人女性の繊細さが出会う場所。</span>
+            <span className="text-neutral-400 text-sm italic">韓国人男性の誠実さと日本人女性の繊細さが出会う場所.</span>
           </p>
 
           <div className="flex flex-col sm:flex-row gap-5">
@@ -55,15 +63,30 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
 
         <div className="relative group">
           <div className="absolute -top-10 -left-10 w-48 h-48 bg-rose-100 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
-          <div className="relative z-10 rounded-[3.5rem] overflow-hidden shadow-2xl border-[12px] border-white ring-1 ring-neutral-100">
-            {/* 사용자가 제공한 일러스트 이미지로 교체 */}
+          <div className="relative z-10 rounded-[3.5rem] overflow-hidden shadow-2xl border-[12px] border-white ring-1 ring-neutral-100 bg-neutral-50 min-h-[450px] flex items-center justify-center">
+            {/* 
+               이미지 경로 이슈 해결을 위한 전략:
+               1. 복잡한 'new URL' 대신 단순 경로 문자열 사용
+               2. 로컬 이미지 로드 실패 시 고품질 대체 이미지(Unsplash)로 자동 전환
+            */}
             <img 
-              src="main_hero.png" 
-              alt="日韓AI翰活 - Connecting Hearts and Cultures" 
-              className="w-full aspect-[1/1] object-cover hover:scale-105 transition-transform duration-700"
+              src={imgError ? "https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=1000&auto=format&fit=crop" : heroImageUrl} 
+              alt="K-Kizuna Connection" 
+              className="w-full h-full aspect-square object-cover hover:scale-105 transition-transform duration-700 block"
+              onError={() => {
+                console.warn("main_hero.png 로드 실패. 대체 이미지를 사용합니다.");
+                setImgError(true);
+              }}
             />
+            {imgError && (
+              <div className="absolute bottom-6 left-0 right-0 text-center">
+                <span className="bg-black/50 backdrop-blur-sm text-white text-[10px] px-3 py-1 rounded-full opacity-60">
+                  main_hero.png 파일을 찾을 수 없어 기본 이미지가 표시됩니다.
+                </span>
+              </div>
+            )}
           </div>
-          {/* Decorative small sticker inside image box area */}
+          {/* Decorative stickers */}
           <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-white rounded-3xl shadow-lg flex items-center justify-center text-3xl z-20 border border-neutral-50 sticker-float">
             🏠
           </div>
